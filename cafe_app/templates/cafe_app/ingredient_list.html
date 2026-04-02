@@ -1,0 +1,135 @@
+{% extends 'cafe_app/base.html' %}
+
+{% block title %}วัตถุดิบ{% endblock %}
+{% block nav_ingredient %}active{% endblock %}
+
+{% block extra_style %}
+.alert-box {
+    background: var(--danger-bg);
+    border: 0.5px solid var(--danger);
+    border-radius: 12px;
+    padding: 14px 20px;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.alert-box p { font-size: 14px; color: var(--danger); }
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.section-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--accent);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+th {
+    padding: 11px 16px;
+    text-align: left;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+    border-bottom: 0.5px solid var(--border);
+}
+
+td {
+    padding: 13px 16px;
+    border-bottom: 0.5px solid var(--border);
+    color: var(--text-primary);
+}
+
+tr:hover td { background: var(--bg-tertiary); }
+
+.stock-normal { color: var(--success); font-weight: 600; }
+.stock-low { color: var(--danger); font-weight: 600; }
+
+.badge-low {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: var(--danger-bg);
+    color: var(--danger);
+    border: 0.5px solid var(--danger);
+    margin-left: 8px;
+}
+
+.btn-add-stock {
+    padding: 5px 14px;
+    background: transparent;
+    border: 0.5px solid var(--border-hover);
+    border-radius: 6px;
+    color: var(--text-secondary);
+    font-size: 12px;
+    text-decoration: none;
+    font-family: 'IBM Plex Sans Thai', sans-serif;
+    transition: all 0.2s;
+}
+
+.btn-add-stock:hover { border-color: var(--accent); color: var(--accent); }
+
+.status-normal { color: var(--success); font-size: 13px; }
+.status-low { color: var(--danger); font-size: 13px; }
+{% endblock %}
+
+{% block content %}
+{% if low_stock_ids %}
+<div class="alert-box">
+    <span>⚠️</span>
+    <p>มีวัตถุดิบ {{ low_stock_ids|length }} รายการที่ใกล้หมดหรือหมดแล้ว กรุณาเติมสต็อก</p>
+</div>
+{% endif %}
+
+<div class="section-header">
+    <div class="section-title">วัตถุดิบทั้งหมด</div>
+</div>
+
+<table>
+    <tr>
+        <th>ชื่อวัตถุดิบ</th>
+        <th>หน่วย</th>
+        <th>สต็อกปัจจุบัน</th>
+        <th>สต็อกขั้นต่ำ</th>
+        <th>สถานะ</th>
+        <th></th>
+    </tr>
+    {% for ingredient in ingredients %}
+    <tr>
+        <td>
+            {{ ingredient.name }}
+            {% if ingredient.ingredient_id in low_stock_ids %}
+                <span class="badge-low">ใกล้หมด</span>
+            {% endif %}
+        </td>
+        <td>{{ ingredient.unit }}</td>
+        <td class="{% if ingredient.ingredient_id in low_stock_ids %}stock-low{% else %}stock-normal{% endif %}">
+            {{ ingredient.current_stock }}
+        </td>
+        <td>{{ ingredient.min_stock }}</td>
+        <td>
+            {% if ingredient.ingredient_id in low_stock_ids %}
+                <span class="status-low">ต้องเติม</span>
+            {% else %}
+                <span class="status-normal">ปกติ</span>
+            {% endif %}
+        </td>
+        <td>
+            <a href="{% url 'add_stock' ingredient.ingredient_id %}" class="btn-add-stock">เติมสต็อก</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

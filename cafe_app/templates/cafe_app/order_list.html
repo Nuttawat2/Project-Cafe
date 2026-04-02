@@ -1,0 +1,129 @@
+{% extends 'cafe_app/base.html' %}
+
+{% block title %}ออเดอร์{% endblock %}
+{% block nav_order %}active{% endblock %}
+
+{% block extra_style %}
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.page-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.total-count {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.total-count span { color: var(--accent); font-weight: 600; }
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+th {
+    padding: 11px 16px;
+    text-align: left;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+    border-bottom: 0.5px solid var(--border);
+}
+
+td {
+    padding: 14px 16px;
+    border-bottom: 0.5px solid var(--border);
+    color: var(--text-primary);
+}
+
+tr:hover td { background: var(--bg-tertiary); }
+
+.badge-done {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: var(--success-bg);
+    color: var(--success);
+    border: 0.5px solid var(--success);
+}
+
+.badge-pending {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: rgba(255,193,7,0.15);
+    color: #ffc107;
+    border: 0.5px solid rgba(255,193,7,0.4);
+}
+
+.badge-cancel {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: var(--danger-bg);
+    color: var(--danger);
+    border: 0.5px solid var(--danger);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 24px;
+    color: var(--text-secondary);
+}
+
+.empty-state .icon { font-size: 40px; margin-bottom: 12px; }
+.empty-state p { font-size: 14px; }
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="page-title">ออเดอร์ทั้งหมด</div>
+    <div class="total-count">ทั้งหมด <span>{{ orders|length }}</span> รายการ</div>
+</div>
+
+{% if orders %}
+<table>
+    <tr>
+        <th>#</th>
+        <th>ลูกค้า</th>
+        <th>พนักงาน</th>
+        <th>วันที่</th>
+        <th>สถานะ</th>
+        <th>ยอดรวม</th>
+    </tr>
+    {% for order in orders %}
+    <tr>
+        <td style="color: var(--text-secondary);">#{{ order.0 }}</td>
+        <td>{{ order.1 }}</td>
+        <td style="color: var(--text-secondary);">{{ order.2 }}</td>
+        <td style="color: var(--text-secondary); font-size: 13px;">{{ order.3 }}</td>
+        <td>
+            {% if order.4 == 'done' %}
+                <span class="badge-done">เสร็จแล้ว</span>
+            {% elif order.4 == 'pending' %}
+                <span class="badge-pending">รอดำเนินการ</span>
+            {% else %}
+                <span class="badge-cancel">ยกเลิก</span>
+            {% endif %}
+        </td>
+        <td style="font-weight: 600; color: var(--accent);">฿{{ order.5 }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<div class="empty-state">
+    <div class="icon">📋</div>
+    <p>ยังไม่มีออเดอร์</p>
+</div>
+{% endif %}
+{% endblock %}

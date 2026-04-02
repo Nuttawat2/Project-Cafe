@@ -1,0 +1,141 @@
+{% extends 'cafe_app/base.html' %}
+
+{% block title %}เติมสต็อก{% endblock %}
+{% block nav_ingredient %}active{% endblock %}
+
+{% block extra_style %}
+.form-card {
+    background: var(--bg-secondary);
+    border: 0.5px solid var(--border);
+    border-radius: 16px;
+    padding: 40px;
+    width: 100%;
+    max-width: 440px;
+    margin: 0 auto;
+}
+
+h2 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--accent);
+}
+
+.subtitle {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 28px;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 0.5px solid var(--border);
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.info-row:last-of-type { margin-bottom: 24px; }
+.info-row span:first-child { color: var(--text-secondary); }
+.info-row span:last-child { color: var(--text-primary); font-weight: 500; }
+
+.form-group { margin-bottom: 20px; }
+
+label {
+    display: block;
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+input[type="number"],
+input[type="text"] {
+    width: 100%;
+    padding: 11px 14px;
+    background: var(--bg-tertiary);
+    border: 0.5px solid var(--border-hover);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 14px;
+    font-family: 'IBM Plex Sans Thai', sans-serif;
+    outline: none;
+    transition: border 0.2s;
+}
+
+input:focus { border-color: var(--accent); }
+
+.btn-group {
+    display: flex;
+    gap: 12px;
+    margin-top: 28px;
+}
+
+.btn-submit {
+    flex: 1;
+    padding: 12px;
+    background: var(--accent);
+    color: #0f0f0f;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'IBM Plex Sans Thai', sans-serif;
+    transition: background 0.2s;
+}
+
+.btn-submit:hover { background: var(--accent-hover); }
+
+.btn-cancel {
+    flex: 1;
+    padding: 12px;
+    background: transparent;
+    color: var(--text-secondary);
+    border: 0.5px solid var(--border-hover);
+    border-radius: 8px;
+    font-size: 14px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'IBM Plex Sans Thai', sans-serif;
+    transition: all 0.2s;
+}
+
+.btn-cancel:hover { border-color: var(--accent); color: var(--accent); }
+{% endblock %}
+
+{% block content %}
+<div class="form-card">
+    <h2>เติมสต็อก</h2>
+    <p class="subtitle">เพิ่มจำนวนวัตถุดิบเข้าระบบ</p>
+
+    <div class="info-row">
+        <span>วัตถุดิบ</span>
+        <span>{{ ingredient.name }}</span>
+    </div>
+    <div class="info-row">
+        <span>สต็อกปัจจุบัน</span>
+        <span>{{ ingredient.current_stock }} {{ ingredient.unit }}</span>
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label>จำนวนที่เติม ({{ ingredient.unit }})</label>
+            <input type="number" name="quantity" step="0.01" min="0.01" required>
+        </div>
+        <div class="form-group">
+            <label>หมายเหตุ</label>
+            <input type="text" name="note" placeholder="เช่น สั่งซื้อเพิ่ม">
+        </div>
+        <div class="btn-group">
+            <button type="submit" class="btn-submit">บันทึก</button>
+            <a href="{% url 'ingredient_list' %}" class="btn-cancel">ยกเลิก</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

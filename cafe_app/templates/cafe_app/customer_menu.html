@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เมนูร้านกาแฟ</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root[data-theme="dark"] {
+            --bg-primary: #0f0f0f;
+            --bg-secondary: #1a1a1a;
+            --bg-tertiary: #252525;
+            --border: #2a2a2a;
+            --border-hover: #444;
+            --text-primary: #e8e0d5;
+            --text-secondary: #a09080;
+            --accent: #c9a96e;
+            --accent-hover: #b8945a;
+            --success: #81c784;
+            --danger: #e57373;
+            --success-bg: rgba(46,125,50,0.15);
+            --danger-bg: rgba(198,40,40,0.15);
+        }
+
+        :root[data-theme="light"] {
+            --bg-primary: #faf8f5;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f0ebe3;
+            --border: #e0d8cc;
+            --border-hover: #c9b99a;
+            --text-primary: #2c1f0e;
+            --text-secondary: #7a6550;
+            --accent: #9a6f3a;
+            --accent-hover: #7d5a2e;
+            --success: #2e7d32;
+            --danger: #c62828;
+            --success-bg: rgba(46,125,50,0.1);
+            --danger-bg: rgba(198,40,40,0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'IBM Plex Sans Thai', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        header {
+            background: var(--bg-secondary);
+            border-bottom: 0.5px solid var(--border);
+            padding: 0 24px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 2px;
+        }
+
+        .logo span { color: var(--text-primary); font-weight: 300; }
+
+        .header-right { display: flex; align-items: center; gap: 12px; }
+
+        .cart-btn {
+            padding: 8px 16px;
+            background: var(--accent);
+            color: #0f0f0f;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'IBM Plex Sans Thai', sans-serif;
+            transition: background 0.2s;
+        }
+
+        .cart-btn:hover { background: var(--accent-hover); }
+
+        .theme-toggle {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: 0.5px solid var(--border);
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+
+        .promo-banner {
+            background: linear-gradient(135deg, #1a1a1a, #252525);
+            border: 0.5px solid var(--accent);
+            border-radius: 14px;
+            padding: 16px 20px;
+            margin-bottom: 28px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .promo-banner .promo-icon { font-size: 20px; }
+
+        .promo-banner .promo-text { font-size: 14px; color: var(--accent); font-weight: 500; }
+
+        .filter-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 7px 18px;
+            border: 0.5px solid var(--border-hover);
+            background: transparent;
+            color: var(--text-secondary);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            font-family: 'IBM Plex Sans Thai', sans-serif;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #0f0f0f;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        .menu-card {
+            background: var(--bg-secondary);
+            border: 0.5px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            transition: transform 0.2s, border-color 0.2s;
+            cursor: pointer;
+        }
+
+        .menu-card:hover { transform: translateY(-3px); border-color: var(--accent); }
+        .menu-card.selected { border-color: var(--accent); border-width: 1.5px; }
+        .menu-card.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+.menu-card.disabled:hover {
+    transform: none;
+    border-color: var(--border);
+}
+
+        .menu-img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+        }
+
+        .menu-img-placeholder {
+            width: 100%;
+            height: 160px;
+            background: var(--bg-tertiary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+        }
+
+        .menu-body { padding: 14px; }
+
+        .menu-category {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent);
+            margin-bottom: 4px;
+        }
+
+        .menu-name { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+
+        .menu-price { font-size: 18px; font-weight: 700; color: var(--accent); }
+
+        .menu-price span { font-size: 12px; font-weight: 400; color: var(--text-secondary); }
+
+        .qty-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .qty-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            border: 0.5px solid var(--border-hover);
+            background: transparent;
+            color: var(--text-primary);
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            font-family: 'IBM Plex Sans Thai', sans-serif;
+        }
+
+        .qty-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+        .qty-display {
+            font-size: 15px;
+            font-weight: 600;
+            min-width: 24px;
+            text-align: center;
+            color: var(--text-primary);
+        }
+
+        .cart-panel {
+            position: fixed;
+            right: 0;
+            top: 60px;
+            width: 340px;
+            height: calc(100vh - 60px);
+            background: var(--bg-secondary);
+            border-left: 0.5px solid var(--border);
+            padding: 24px;
+            overflow-y: auto;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            z-index: 99;
+        }
+
+        .cart-panel.open { transform: translateX(0); }
+
+        .cart-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 0.5px solid var(--border);
+            font-size: 14px;
+        }
+
+        .cart-item-name { color: var(--text-primary); }
+        .cart-item-price { color: var(--accent); font-weight: 600; }
+
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            padding: 16px 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .name-input {
+            width: 100%;
+            padding: 10px 14px;
+            background: var(--bg-tertiary);
+            border: 0.5px solid var(--border-hover);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: 'IBM Plex Sans Thai', sans-serif;
+            outline: none;
+            margin-bottom: 12px;
+            transition: border 0.2s;
+        }
+
+        .name-input:focus { border-color: var(--accent); }
+
+        .btn-confirm {
+            width: 100%;
+            padding: 13px;
+            background: var(--accent);
+            color: #0f0f0f;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'IBM Plex Sans Thai', sans-serif;
+            transition: background 0.2s;
+        }
+
+        .btn-confirm:hover { background: var(--accent-hover); }
+
+        .empty-cart {
+            text-align: center;
+            padding: 40px 0;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">CAFE <span>MENU</span></div>
+    <div class="header-right">
+        <div style="font-size:13px; color:var(--text-secondary); text-align:right;">
+            <div style="color:var(--text-primary); font-weight:500;">{{ customer_name }}</div>
+            <div>แต้ม {{ customer_points }} คะแนน</div>
+        </div>
+        <button class="cart-btn" onclick="toggleCart()">🛒 ตะกร้า (<span id="cartCount">0</span>)</button>
+        <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
+    </div>
+</header>
+
+<div class="container">
+    {% if promotions %}
+    <div class="promo-banner">
+        <div class="promo-icon">🎉</div>
+        <div>
+            {% for promo in promotions %}
+            <div class="promo-text">{{ promo.0 }} — {{ promo.1 }}</div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="filter-bar">
+        <button class="filter-btn active" onclick="filterMenu('all', this)">ทั้งหมด</button>
+        <button class="filter-btn" onclick="filterMenu('Coffee', this)">Coffee</button>
+        <button class="filter-btn" onclick="filterMenu('Tea', this)">Tea</button>
+        <button class="filter-btn" onclick="filterMenu('Bakery', this)">Bakery</button>
+    </div>
+
+    <form method="POST" action="{% url 'customer_order' %}" id="orderForm">
+        {% csrf_token %}
+
+        <div class="menu-grid" id="menuGrid">
+            {% for menu in menus %}
+<div class="menu-card {% if not menu.can_make %}disabled{% endif %}" 
+     data-category="{{ menu.category }}" 
+     data-id="{{ menu.menu_id }}" 
+     data-name="{{ menu.name }}" 
+     data-price="{{ menu.price }}">
+    {% if menu.image %}
+        <img src="/media/{{ menu.image }}" class="menu-img" alt="{{ menu.name }}">
+    {% else %}
+        <div class="menu-img-placeholder">☕</div>
+    {% endif %}
+    <div class="menu-body">
+        <div class="menu-category">{{ menu.category }}</div>
+        <div class="menu-name">{{ menu.name }}</div>
+        <div class="menu-price">฿{{ menu.price }} <span>บาท</span></div>
+        {% if menu.can_make %}
+        <div class="qty-control">
+            <button type="button" class="qty-btn" onclick="changeQty({{ menu.menu_id }}, -1)">−</button>
+            <span class="qty-display" id="qty-{{ menu.menu_id }}">0</span>
+            <button type="button" class="qty-btn" onclick="changeQty({{ menu.menu_id }}, 1)">+</button>
+        </div>
+        <div style="margin-top:10px;">
+    <select name="sweetness" id="input-sweet-{{ menu.menu_id }}" 
+        style="width:100%; padding:7px 10px; background:var(--bg-tertiary); border:0.5px solid var(--border-hover); border-radius:6px; color:var(--text-secondary); font-size:12px; font-family:'IBM Plex Sans Thai',sans-serif; outline:none;">
+        <option value="100">หวานปกติ 100%</option>
+        <option value="75">หวานน้อย 75%</option>
+        <option value="50">หวานครึ่ง 50%</option>
+        <option value="25">หวานน้อยมาก 25%</option>
+        <option value="0">ไม่หวาน 0%</option>
+        </select>
+        </div>
+<input type="hidden" name="menu_id" value="{{ menu.menu_id }}" id="input-id-{{ menu.menu_id }}">
+<input type="hidden" name="quantity" value="0" id="input-qty-{{ menu.menu_id }}">
+        {% else %}
+        <div style="margin-top:12px; font-size:12px; color:var(--danger); font-weight:600;">วัตถุดิบหมด — สั่งไม่ได้</div>
+        {% endif %}
+    </div>
+</div>
+{% endfor %}
+        </div>
+    </form>
+</div>
+
+<div class="cart-panel" id="cartPanel">
+    <div class="cart-title">🛒 รายการที่สั่ง</div>
+    <div id="cartItems"><div class="empty-cart">ยังไม่มีรายการ</div></div>
+    <div class="cart-total">
+        <span>ยอดรวม</span>
+        <span id="cartTotal">฿0</span>
+    </div>
+    <button class="btn-confirm" onclick="confirmOrder()">ยืนยันการสั่ง</button>
+</div>
+
+<script>
+    let cart = {};
+
+    function changeQty(menuId, delta) {
+        const current = cart[menuId] || 0;
+        const newQty = Math.max(0, current + delta);
+        cart[menuId] = newQty;
+
+        document.getElementById('qty-' + menuId).textContent = newQty;
+        document.getElementById('input-qty-' + menuId).value = newQty;
+
+        const card = document.querySelector('[data-id="' + menuId + '"]');
+        if (newQty > 0) card.classList.add('selected');
+        else card.classList.remove('selected');
+
+        updateCart();
+    }
+
+    function updateCart() {
+        const items = document.querySelectorAll('.menu-card');
+        let html = '';
+        let total = 0;
+        let count = 0;
+
+        items.forEach(card => {
+            const id = card.dataset.id;
+            const qty = cart[id] || 0;
+            if (qty > 0) {
+                const name = card.dataset.name;
+                const price = parseFloat(card.dataset.price);
+                const subtotal = price * qty;
+                total += subtotal;
+                count += qty;
+                html += '<div class="cart-item"><span class="cart-item-name">' + name + ' x' + qty + '</span><span class="cart-item-price">฿' + subtotal.toFixed(2) + '</span></div>';
+            }
+        });
+
+        document.getElementById('cartItems').innerHTML = html || '<div class="empty-cart">ยังไม่มีรายการ</div>';
+        document.getElementById('cartTotal').textContent = '฿' + total.toFixed(2);
+        document.getElementById('cartCount').textContent = count;
+    }
+
+    function toggleCart() {
+        document.getElementById('cartPanel').classList.toggle('open');
+    }
+
+    function confirmOrder() {
+        let hasItem = false;
+        for (let id in cart) { if (cart[id] > 0) { hasItem = true; break; } }
+        if (!hasItem) { alert('กรุณาเลือกเมนูอย่างน้อย 1 รายการ'); return; }
+        document.getElementById('orderForm').submit();
+}
+
+    function filterMenu(category, btn) {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.querySelectorAll('.menu-card').forEach(card => {
+            card.style.display = (category === 'all' || card.dataset.category === category) ? 'block' : 'none';
+        });
+    }
+
+    function toggleTheme() {
+        const html = document.documentElement;
+        const btn = document.getElementById('themeBtn');
+        if (html.getAttribute('data-theme') === 'dark') {
+            html.setAttribute('data-theme', 'light');
+            btn.textContent = '☀️';
+            localStorage.setItem('theme', 'light');
+        } else {
+            html.setAttribute('data-theme', 'dark');
+            btn.textContent = '🌙';
+            localStorage.setItem('theme', 'dark');
+        }
+    }
+
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    document.getElementById('themeBtn').textContent = savedTheme === 'dark' ? '🌙' : '☀️';
+</script>
+
+</body>
+</html>

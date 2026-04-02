@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เลขคิวของคุณ</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root[data-theme="dark"] {
+            --bg-primary: #0f0f0f;
+            --bg-secondary: #1a1a1a;
+            --bg-tertiary: #252525;
+            --border: #2a2a2a;
+            --text-primary: #e8e0d5;
+            --text-secondary: #a09080;
+            --accent: #c9a96e;
+            --accent-hover: #b8945a;
+            --success: #81c784;
+            --success-bg: rgba(46,125,50,0.15);
+        }
+
+        :root[data-theme="light"] {
+            --bg-primary: #faf8f5;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f0ebe3;
+            --border: #e0d8cc;
+            --text-primary: #2c1f0e;
+            --text-secondary: #7a6550;
+            --accent: #9a6f3a;
+            --accent-hover: #7d5a2e;
+            --success: #2e7d32;
+            --success-bg: rgba(46,125,50,0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'IBM Plex Sans Thai', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .queue-card {
+            background: var(--bg-secondary);
+            border: 0.5px solid var(--border);
+            border-radius: 20px;
+            padding: 48px 40px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .queue-label {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .queue-number {
+            font-size: 96px;
+            font-weight: 700;
+            color: var(--accent);
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .queue-name {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+        }
+
+        .divider {
+            height: 0.5px;
+            background: var(--border);
+            margin: 24px 0;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            padding: 8px 0;
+        }
+
+        .info-row span:first-child { color: var(--text-secondary); }
+        .info-row span:last-child { font-weight: 600; color: var(--text-primary); }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-top: 16px;
+        }
+
+        .status-waiting {
+            background: rgba(255,193,7,0.15);
+            color: #ffc107;
+            border: 0.5px solid rgba(255,193,7,0.4);
+        }
+
+        .status-done {
+            background: var(--success-bg);
+            color: var(--success);
+            border: 0.5px solid var(--success);
+        }
+
+        .ahead-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 12px;
+        }
+
+        .ahead-text span { color: var(--accent); font-weight: 600; }
+
+        .btn-back {
+            display: block;
+            margin-top: 28px;
+            padding: 12px;
+            background: transparent;
+            border: 0.5px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-family: 'IBM Plex Sans Thai', sans-serif;
+            transition: all 0.2s;
+        }
+
+        .btn-back:hover { border-color: var(--accent); color: var(--accent); }
+
+        .refresh-text {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 16px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="queue-card">
+    <div class="queue-label">หมายเลขคิวของคุณ</div>
+    <div class="queue-number">{{ queue.0 }}</div>
+    <div class="queue-name">{{ queue.3 }}</div>
+
+    <div class="divider"></div>
+
+    <div class="info-row">
+        <span>ยอดรวม</span>
+        <span>฿{{ queue.2 }}</span>
+    </div>
+    <div class="info-row">
+        <span>สถานะ</span>
+        <span>
+            {% if queue.1 == 'waiting' %}
+                <span class="status-badge status-waiting">รอเรียกคิว</span>
+            {% elif queue.1 == 'done' %}
+                <span class="status-badge status-done">เสร็จแล้ว</span>
+            {% endif %}
+        </span>
+    </div>
+
+    {% if queue.1 == 'waiting' %}
+    <div class="ahead-text">
+        มีคิวรออยู่ก่อนหน้า <span>{{ ahead }}</span> คิว
+    </div>
+    {% endif %}
+
+    <a href="{% url 'customer_menu' %}" class="btn-back">สั่งเพิ่ม / กลับหน้าเมนู</a>
+    <div class="refresh-text">รีเฟรชหน้านี้เพื่ออัปเดตสถานะ</div>
+</div>
+
+<script>
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+</script>
+
+</body>
+</html>

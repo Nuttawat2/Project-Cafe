@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เข้าสู่ระบบลูกค้า</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root[data-theme="dark"] {
+            --bg-primary: #0f0f0f;
+            --bg-secondary: #1a1a1a;
+            --bg-tertiary: #252525;
+            --border: #2a2a2a;
+            --border-hover: #444;
+            --text-primary: #e8e0d5;
+            --text-secondary: #a09080;
+            --accent: #c9a96e;
+            --accent-hover: #b8945a;
+            --danger: #e57373;
+            --danger-bg: rgba(198,40,40,0.15);
+        }
+
+        :root[data-theme="light"] {
+            --bg-primary: #faf8f5;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f0ebe3;
+            --border: #e0d8cc;
+            --border-hover: #c9b99a;
+            --text-primary: #2c1f0e;
+            --text-secondary: #7a6550;
+            --accent: #9a6f3a;
+            --accent-hover: #7d5a2e;
+            --danger: #c62828;
+            --danger-bg: rgba(198,40,40,0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'IBM Plex Sans Thai', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .card {
+            background: var(--bg-secondary);
+            border: 0.5px solid var(--border);
+            border-radius: 16px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .logo h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 2px;
+        }
+
+        .logo h1 span { color: var(--text-primary); font-weight: 300; }
+        .logo p { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .form-group { margin-bottom: 16px; }
+
+        label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 11px 14px;
+            background: var(--bg-tertiary);
+            border: 0.5px solid var(--border-hover);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: 'IBM Plex Sans Thai', sans-serif;
+            outline: none;
+            transition: border 0.2s;
+        }
+
+        input:focus { border-color: var(--accent); }
+
+        .error-msg {
+            background: var(--danger-bg);
+            border: 0.5px solid var(--danger);
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 13px;
+            color: var(--danger);
+            margin-bottom: 16px;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 12px;
+            background: var(--accent);
+            color: #0f0f0f;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'IBM Plex Sans Thai', sans-serif;
+            transition: background 0.2s;
+            margin-bottom: 12px;
+        }
+
+        .btn-primary:hover { background: var(--accent-hover); }
+
+        .btn-secondary {
+            width: 100%;
+            padding: 12px;
+            background: transparent;
+            color: var(--text-secondary);
+            border: 0.5px solid var(--border-hover);
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            font-family: 'IBM Plex Sans Thai', sans-serif;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+        .theme-btn {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: 0.5px solid var(--border);
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .theme-btn:hover { border-color: var(--accent); color: var(--accent); }
+    </style>
+</head>
+<body>
+
+<button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
+
+<div class="card">
+    <div class="logo">
+        <h1>CAFE <span>MENU</span></h1>
+        <p>ยินดีต้อนรับสู่ร้านกาแฟของเรา</p>
+    </div>
+
+    <div class="card-title">เข้าสู่ระบบด้วยเบอร์โทร</div>
+
+    {% if error %}
+    <div class="error-msg">{{ error }}</div>
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label>เบอร์โทรศัพท์</label>
+            <input type="tel" name="phone" placeholder="เช่น 0812345678" autofocus required>
+        </div>
+        <button type="submit" class="btn-primary">เข้าสู่ระบบ</button>
+    </form>
+
+    <a href="{% url 'customer_register' %}" class="btn-secondary">สมัครสมาชิกใหม่</a>
+</div>
+
+<script>
+    function toggleTheme() {
+        const html = document.documentElement;
+        const btn = document.getElementById('themeBtn');
+        if (html.getAttribute('data-theme') === 'dark') {
+            html.setAttribute('data-theme', 'light');
+            btn.textContent = '☀️';
+            localStorage.setItem('theme', 'light');
+        } else {
+            html.setAttribute('data-theme', 'dark');
+            btn.textContent = '🌙';
+            localStorage.setItem('theme', 'dark');
+        }
+    }
+
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    document.getElementById('themeBtn').textContent = savedTheme === 'dark' ? '🌙' : '☀️';
+</script>
+
+</body>
+</html>

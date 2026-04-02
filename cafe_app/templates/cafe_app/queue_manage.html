@@ -1,0 +1,243 @@
+{% extends 'cafe_app/base.html' %}
+
+{% block title %}จัดการคิว{% endblock %}
+{% block nav_queue %}active{% endblock %}
+
+{% block extra_style %}
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.page-title { font-size: 18px; font-weight: 600; }
+
+.queue-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.queue-card {
+    background: var(--bg-secondary);
+    border: 0.5px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    transition: border-color 0.2s;
+}
+
+.queue-card.waiting { border-left: 3px solid #ffc107; }
+.queue-card.done { border-left: 3px solid var(--success); opacity: 0.6; }
+.queue-card.cancelled { border-left: 3px solid var(--danger); opacity: 0.6; }
+
+.queue-number {
+    font-size: 48px;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 8px;
+}
+
+.queue-name { font-size: 16px; font-weight: 500; margin-bottom: 4px; }
+
+.queue-price {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+}
+
+.queue-price span { color: var(--accent); font-weight: 600; }
+
+.queue-time {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+}
+
+.order-items {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 0.5px solid var(--border);
+    margin-bottom: 12px;
+}
+
+.order-item-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    padding: 4px 0;
+    color: var(--text-primary);
+}
+
+.order-item-sweet {
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.btn-group { display: flex; gap: 8px; }
+
+.btn-done {
+    flex: 1;
+    padding: 9px;
+    background: var(--success-bg);
+    border: 0.5px solid var(--success);
+    border-radius: 8px;
+    color: var(--success);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'IBM Plex Sans Thai', sans-serif;
+    transition: all 0.2s;
+}
+
+.btn-done:hover { background: var(--success); color: #fff; }
+
+.btn-cancel {
+    flex: 1;
+    padding: 9px;
+    background: var(--danger-bg);
+    border: 0.5px solid var(--danger);
+    border-radius: 8px;
+    color: var(--danger);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'IBM Plex Sans Thai', sans-serif;
+    transition: all 0.2s;
+}
+
+.btn-cancel:hover { background: var(--danger); color: #fff; }
+
+.badge {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 10px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+}
+
+.badge-waiting {
+    background: rgba(255,193,7,0.15);
+    color: #ffc107;
+    border: 0.5px solid rgba(255,193,7,0.4);
+}
+
+.badge-done {
+    background: var(--success-bg);
+    color: var(--success);
+    border: 0.5px solid var(--success);
+}
+
+.badge-cancelled {
+    background: var(--danger-bg);
+    color: var(--danger);
+    border: 0.5px solid var(--danger);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px;
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.stats-bar {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+}
+
+.stat-pill {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.stat-waiting {
+    background: rgba(255,193,7,0.15);
+    color: #ffc107;
+    border: 0.5px solid rgba(255,193,7,0.3);
+}
+
+.stat-done {
+    background: var(--success-bg);
+    color: var(--success);
+    border: 0.5px solid var(--success);
+}
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="page-title">จัดการคิววันนี้</div>
+    <form method="POST" action="{% url 'queue_clear' %}">
+        {% csrf_token %}
+        <button type="submit" onclick="return confirm('ยืนยันการล้างคิวทั้งหมดวันนี้?')" style="padding:8px 18px; background:var(--danger-bg); border:0.5px solid var(--danger); border-radius:8px; color:var(--danger); font-size:13px; font-weight:600; cursor:pointer; font-family:'IBM Plex Sans Thai',sans-serif; transition:all 0.2s;">ล้างคิวทั้งหมด</button>
+    </form>
+</div>
+
+{% if queues %}
+<div class="stats-bar">
+    <div class="stat-pill stat-waiting">รอดำเนินการ {{ queues|length }} คิว</div>
+    <div class="stat-pill stat-done">กดรีเฟรชเพื่ออัปเดต</div>
+</div>
+
+<div class="queue-grid">
+    {% for q in queues %}
+    <div class="queue-card {{ q.status }}">
+        <div class="queue-number">{{ q.queue_number }}</div>
+        <div class="queue-name">{{ q.customer_name }}</div>
+        <div class="queue-price">ยอดรวม <span>฿{{ q.total_price }}</span></div>
+        <div class="queue-time">{{ q.created_at }}</div>
+
+        <div class="order-items">
+            {% for item in q.items %}
+            <div class="order-item-row">
+                <span>{{ item.0 }} x{{ item.1 }}</span>
+                <span class="order-item-sweet">
+                    {% if item.2 == 100 %}หวานปกติ (100%)
+                    {% elif item.2 == 75 %}หวานน้อย (75%)
+                    {% elif item.2 == 50 %}หวานครึ่ง (50%)
+                    {% elif item.2 == 25 %}หวานน้อยมาก (25%)
+                    {% elif item.2 == 0 %}ไม่หวาน (0%)
+                    {% else %}{{ item.2 }}%
+                    {% endif %}
+                </span>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if q.status == 'waiting' %}
+            <span class="badge badge-waiting">รอเรียกคิว</span>
+        {% elif q.status == 'done' %}
+            <span class="badge badge-done">เสร็จแล้ว</span>
+        {% else %}
+            <span class="badge badge-cancelled">ยกเลิก</span>
+        {% endif %}
+
+        {% if q.status == 'waiting' %}
+        <div class="btn-group">
+            <form method="POST" action="{% url 'queue_update' q.queue_id %}">
+                {% csrf_token %}
+                <input type="hidden" name="status" value="done">
+                <button type="submit" class="btn-done">เสร็จแล้ว</button>
+            </form>
+            <form method="POST" action="{% url 'queue_update' q.queue_id %}">
+                {% csrf_token %}
+                <input type="hidden" name="status" value="cancelled">
+                <button type="submit" class="btn-cancel">ยกเลิก</button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+
+{% else %}
+<div class="empty-state">
+    <p>ยังไม่มีคิววันนี้</p>
+</div>
+{% endif %}
+{% endblock %}

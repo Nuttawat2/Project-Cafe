@@ -1,0 +1,170 @@
+{% extends 'cafe_app/base.html' %}
+
+{% block title %}{{ action }}{% endblock %}
+{% block nav_menu %}active{% endblock %}
+
+{% block extra_style %}
+.form-card {
+    background: var(--bg-secondary);
+    border: 0.5px solid var(--border);
+    border-radius: 16px;
+    padding: 40px;
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+h2 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 28px;
+    color: var(--accent);
+}
+
+.form-group { margin-bottom: 20px; }
+
+label {
+    display: block;
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+input[type="text"],
+input[type="number"],
+select {
+    width: 100%;
+    padding: 11px 14px;
+    background: var(--bg-tertiary);
+    border: 0.5px solid var(--border-hover);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 14px;
+    font-family: 'IBM Plex Sans Thai', sans-serif;
+    outline: none;
+    transition: border 0.2s;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+select:focus { border-color: var(--accent); }
+
+select option { background: var(--bg-tertiary); }
+
+input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    background: var(--bg-tertiary);
+    border: 0.5px solid var(--border-hover);
+    border-radius: 8px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-family: 'IBM Plex Sans Thai', sans-serif;
+}
+
+.preview-img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    border: 0.5px solid var(--border);
+}
+
+.checkbox-group { display: flex; align-items: center; gap: 10px; }
+
+input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent);
+}
+
+.checkbox-group span { font-size: 14px; color: var(--text-primary); }
+
+.btn-group {
+    display: flex;
+    gap: 12px;
+    margin-top: 28px;
+}
+
+.btn-submit {
+    flex: 1;
+    padding: 12px;
+    background: var(--accent);
+    color: #0f0f0f;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'IBM Plex Sans Thai', sans-serif;
+    transition: background 0.2s;
+}
+
+.btn-submit:hover { background: var(--accent-hover); }
+
+.btn-cancel {
+    flex: 1;
+    padding: 12px;
+    background: transparent;
+    color: var(--text-secondary);
+    border: 0.5px solid var(--border-hover);
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'IBM Plex Sans Thai', sans-serif;
+    transition: all 0.2s;
+}
+
+.btn-cancel:hover { border-color: var(--accent); color: var(--accent); }
+{% endblock %}
+
+{% block content %}
+<div class="form-card">
+    <h2>{{ action }}</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            <label>ชื่อเมนู</label>
+            <input type="text" name="name" value="{{ menu.name }}" required>
+        </div>
+        <div class="form-group">
+            <label>หมวดหมู่</label>
+            <select name="category">
+                <option value="Coffee" {% if menu.category == 'Coffee' %}selected{% endif %}>Coffee</option>
+                <option value="Tea" {% if menu.category == 'Tea' %}selected{% endif %}>Tea</option>
+                <option value="Bakery" {% if menu.category == 'Bakery' %}selected{% endif %}>Bakery</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>ราคา (บาท)</label>
+            <input type="number" name="price" value="{{ menu.price }}" step="0.01" required>
+        </div>
+        <div class="form-group">
+            <label>รูปเมนู</label>
+            {% if menu.image %}
+                <img src="{{ menu.image.url }}" class="preview-img">
+            {% endif %}
+            <input type="file" name="image" accept="image/*">
+        </div>
+        <div class="form-group">
+            <div class="checkbox-group">
+                <input type="checkbox" name="is_available" id="is_available"
+                    {% if menu.is_available %}checked{% endif %}>
+                <span>มีจำหน่าย</span>
+            </div>
+        </div>
+        <div class="btn-group">
+            <button type="submit" class="btn-submit">บันทึก</button>
+            <a href="{% url 'menu_list' %}" class="btn-cancel">ยกเลิก</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

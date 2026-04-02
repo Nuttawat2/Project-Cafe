@@ -1,0 +1,222 @@
+{% extends 'cafe_app/base.html' %}
+
+{% block title %}เมนูทั้งหมด{% endblock %}
+{% block nav_menu %}active{% endblock %}
+
+{% block extra_style %}
+.filter-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.filter-group { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.filter-btn {
+    padding: 7px 18px;
+    border: 0.5px solid var(--border-hover);
+    background: transparent;
+    color: var(--text-secondary);
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: 'IBM Plex Sans Thai', sans-serif;
+    transition: all 0.2s;
+}
+
+.filter-btn:hover, .filter-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #0f0f0f;
+}
+
+.btn-add {
+    padding: 8px 20px;
+    background: var(--accent);
+    color: #0f0f0f;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    font-family: 'IBM Plex Sans Thai', sans-serif;
+    transition: background 0.2s;
+}
+
+.btn-add:hover { background: var(--accent-hover); }
+
+.total-count {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+}
+
+.total-count span { color: var(--accent); font-weight: 600; }
+
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+}
+
+.menu-card {
+    background: var(--bg-secondary);
+    border: 0.5px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.menu-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent);
+}
+
+.menu-img {
+    width: 100%;
+    height: 170px;
+    object-fit: cover;
+}
+
+.menu-img-placeholder {
+    width: 100%;
+    height: 170px;
+    background: var(--bg-tertiary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+}
+
+.menu-body { padding: 16px; }
+
+.menu-category {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--accent);
+    margin-bottom: 6px;
+}
+
+.menu-name {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+}
+
+.menu-price {
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--accent);
+}
+
+.menu-price span {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text-secondary);
+}
+
+.menu-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 0.5px solid var(--border);
+}
+
+.badge-available {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: var(--success-bg);
+    color: var(--success);
+    border: 0.5px solid var(--success);
+}
+
+.badge-unavailable {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: var(--danger-bg);
+    color: var(--danger);
+    border: 0.5px solid var(--danger);
+}
+
+.action-btns { display: flex; gap: 6px; }
+
+.btn-edit, .btn-delete {
+    padding: 5px 12px;
+    background: transparent;
+    border: 0.5px solid var(--border-hover);
+    border-radius: 6px;
+    color: var(--text-secondary);
+    font-size: 12px;
+    text-decoration: none;
+    font-family: 'IBM Plex Sans Thai', sans-serif;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.btn-edit:hover { border-color: var(--accent); color: var(--accent); }
+.btn-delete:hover { border-color: var(--danger); color: var(--danger); }
+{% endblock %}
+
+{% block content %}
+<div class="filter-bar">
+    <div class="filter-group">
+        <button class="filter-btn active" onclick="filterMenu('all', this)">ทั้งหมด</button>
+        <button class="filter-btn" onclick="filterMenu('Coffee', this)">Coffee</button>
+        <button class="filter-btn" onclick="filterMenu('Tea', this)">Tea</button>
+        <button class="filter-btn" onclick="filterMenu('Bakery', this)">Bakery</button>
+    </div>
+    <a href="{% url 'menu_add' %}" class="btn-add">+ เพิ่มเมนู</a>
+</div>
+
+<div class="total-count">ทั้งหมด <span>{{ menus.count }}</span> เมนู</div>
+
+<div class="menu-grid" id="menuGrid">
+    {% for menu in menus %}
+    <div class="menu-card" data-category="{{ menu.category }}">
+        {% if menu.image %}
+            <img src="{{ menu.image.url }}" class="menu-img" alt="{{ menu.name }}">
+        {% else %}
+            <div class="menu-img-placeholder">☕</div>
+        {% endif %}
+        <div class="menu-body">
+            <div class="menu-category">{{ menu.category }}</div>
+            <div class="menu-name">{{ menu.name }}</div>
+            <div class="menu-price">฿{{ menu.price }} <span>บาท</span></div>
+            <div class="menu-footer">
+                {% if menu.is_available %}
+                    <span class="badge-available">มีจำหน่าย</span>
+                {% else %}
+                    <span class="badge-unavailable">หมดแล้ว</span>
+                {% endif %}
+                <div class="action-btns">
+                    <a href="{% url 'menu_edit' menu.menu_id %}" class="btn-edit">แก้ไข</a>
+                    <a href="{% url 'menu_delete' menu.menu_id %}" class="btn-delete">ลบ</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block extra_script %}
+<script>
+function filterMenu(category, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.menu-card').forEach(card => {
+        card.style.display = (category === 'all' || card.dataset.category === category) ? 'block' : 'none';
+    });
+}
+</script>
+{% endblock %}

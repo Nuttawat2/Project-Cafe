@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Cafe System{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root[data-theme="dark"] {
+            --bg-primary: #0f0f0f;
+            --bg-secondary: #1a1a1a;
+            --bg-tertiary: #252525;
+            --border: #2a2a2a;
+            --border-hover: #444;
+            --text-primary: #e8e0d5;
+            --text-secondary: #a09080;
+            --accent: #c9a96e;
+            --accent-hover: #b8945a;
+            --success: #81c784;
+            --danger: #e57373;
+            --success-bg: rgba(46,125,50,0.15);
+            --danger-bg: rgba(198,40,40,0.15);
+        }
+
+        :root[data-theme="light"] {
+            --bg-primary: #faf8f5;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f0ebe3;
+            --border: #e0d8cc;
+            --border-hover: #c9b99a;
+            --text-primary: #2c1f0e;
+            --text-secondary: #7a6550;
+            --accent: #9a6f3a;
+            --accent-hover: #7d5a2e;
+            --success: #2e7d32;
+            --danger: #c62828;
+            --success-bg: rgba(46,125,50,0.1);
+            --danger-bg: rgba(198,40,40,0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'IBM Plex Sans Thai', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        header {
+            background: var(--bg-secondary);
+            border-bottom: 0.5px solid var(--border);
+            padding: 0 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 2px;
+            text-decoration: none;
+        }
+
+        .logo span { color: var(--text-primary); font-weight: 300; }
+
+        nav { display: flex; align-items: center; gap: 8px; }
+
+        nav a {
+            padding: 6px 14px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        nav a:hover { color: var(--accent); background: var(--bg-tertiary); }
+        nav a.active { color: var(--accent); background: var(--bg-tertiary); }
+
+        .header-right { display: flex; align-items: center; gap: 12px; }
+
+        .theme-toggle {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: 0.5px solid var(--border);
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 36px 24px;
+        }
+
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 999;
+        }
+
+        .toast {
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            animation: slideIn 0.3s ease;
+            min-width: 240px;
+        }
+
+        .toast-success {
+            background: var(--success-bg);
+            border: 0.5px solid var(--success);
+            color: var(--success);
+        }
+
+        .toast-danger {
+            background: var(--danger-bg);
+            border: 0.5px solid var(--danger);
+            color: var(--danger);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        {% block extra_style %}{% endblock %}
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="{% url 'dashboard' %}" class="logo">CAFE <span>SYSTEM</span></a>
+    <nav>
+        <a href="{% url 'dashboard' %}" class="{% block nav_dashboard %}{% endblock %}">Dashboard</a>
+        <a href="{% url 'menu_list' %}" class="{% block nav_menu %}{% endblock %}">เมนู</a>
+        <a href="{% url 'ingredient_list' %}" class="{% block nav_ingredient %}{% endblock %}">วัตถุดิบ</a>
+        <a href="{% url 'order_list' %}" class="{% block nav_order %}{% endblock %}">ออเดอร์</a>
+        <a href="{% url 'queue_manage' %}" class="{% block nav_queue %}{% endblock %}">คิว</a>
+    </nav>
+    <div class="header-right">
+        <span style="font-size:13px; color:var(--text-secondary);">{{ request.user.username }}</span>
+        <form method="POST" action="{% url 'logout' %}" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit" style="padding:6px 14px; border:0.5px solid var(--border-hover); border-radius:6px; color:var(--text-secondary); background:transparent; font-size:13px; cursor:pointer; font-family:'IBM Plex Sans Thai',sans-serif; transition:all 0.2s;" onmouseover="this.style.borderColor='var(--danger)';this.style.color='var(--danger)'" onmouseout="this.style.borderColor='var(--border-hover)';this.style.color='var(--text-secondary)'">ออกจากระบบ</button>
+</form>
+        <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
+    </div>
+</header>
+
+<div class="container">
+    {% if messages %}
+        <div class="toast-container">
+            {% for message in messages %}
+                <div class="toast toast-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+</div>
+
+<script>
+    function toggleTheme() {
+        const html = document.documentElement;
+        const btn = document.getElementById('themeBtn');
+        if (html.getAttribute('data-theme') === 'dark') {
+            html.setAttribute('data-theme', 'light');
+            btn.textContent = '☀️';
+            localStorage.setItem('theme', 'light');
+        } else {
+            html.setAttribute('data-theme', 'dark');
+            btn.textContent = '🌙';
+            localStorage.setItem('theme', 'dark');
+        }
+    }
+
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    document.getElementById('themeBtn').textContent = savedTheme === 'dark' ? '🌙' : '☀️';
+
+    setTimeout(() => {
+        document.querySelectorAll('.toast').forEach(t => {
+            t.style.transition = 'opacity 0.5s';
+            t.style.opacity = '0';
+            setTimeout(() => t.remove(), 500);
+        });
+    }, 3000);
+</script>
+
+{% block extra_script %}{% endblock %}
+
+</body>
+</html>

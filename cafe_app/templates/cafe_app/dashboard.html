@@ -1,0 +1,213 @@
+{% extends 'cafe_app/base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+{% block nav_dashboard %}active{% endblock %}
+
+{% block extra_style %}
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.stat-card {
+    background: var(--bg-secondary);
+    border: 0.5px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+}
+
+.stat-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+}
+
+.stat-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--accent);
+}
+
+.stat-sub {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+}
+
+.section-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 16px;
+    margin-top: 32px;
+}
+
+.two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+th {
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+    border-bottom: 0.5px solid var(--border);
+}
+
+td {
+    padding: 12px 14px;
+    border-bottom: 0.5px solid var(--border);
+    color: var(--text-primary);
+}
+
+tr:hover td { background: var(--bg-tertiary); }
+
+.badge-done {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: var(--success-bg);
+    color: var(--success);
+    border: 0.5px solid var(--success);
+}
+
+.badge-pending {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: rgba(255,193,7,0.15);
+    color: #ffc107;
+    border: 0.5px solid rgba(255,193,7,0.4);
+}
+
+.badge-cancel {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: var(--danger-bg);
+    color: var(--danger);
+    border: 0.5px solid var(--danger);
+}
+
+.low-stock-card {
+    background: var(--bg-secondary);
+    border: 0.5px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+}
+
+.low-stock-empty {
+    text-align: center;
+    padding: 24px;
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+
+.recent-card {
+    background: var(--bg-secondary);
+    border: 0.5px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+}
+
+@media (max-width: 768px) {
+    .two-col { grid-template-columns: 1fr; }
+}
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-grid">
+    <div class="stat-card">
+        <div class="stat-label">ยอดขายวันนี้</div>
+        <div class="stat-value">฿{{ today_revenue }}</div>
+        <div class="stat-sub">บาท</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">ออเดอร์วันนี้</div>
+        <div class="stat-value">{{ today_orders }}</div>
+        <div class="stat-sub">รายการ</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">เมนูทั้งหมด</div>
+        <div class="stat-value">{{ total_menus }}</div>
+        <div class="stat-sub">เมนู</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">วัตถุดิบทั้งหมด</div>
+        <div class="stat-value">{{ total_ingredients }}</div>
+        <div class="stat-sub">รายการ</div>
+    </div>
+</div>
+
+<div class="two-col">
+    <div>
+        <div class="section-title">ออเดอร์ล่าสุด</div>
+        <div class="recent-card">
+            {% if recent_orders %}
+            <table>
+                <tr>
+                    <th>ลูกค้า</th>
+                    <th>ยอด</th>
+                    <th>สถานะ</th>
+                </tr>
+                {% for order in recent_orders %}
+                <tr>
+                    <td>{{ order.0 }}</td>
+                    <td>฿{{ order.1 }}</td>
+                    <td>
+                        {% if order.2 == 'done' %}
+                            <span class="badge-done">เสร็จแล้ว</span>
+                        {% elif order.2 == 'pending' %}
+                            <span class="badge-pending">รอดำเนินการ</span>
+                        {% else %}
+                            <span class="badge-cancel">ยกเลิก</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+            {% else %}
+            <div class="low-stock-empty">ยังไม่มีออเดอร์</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div>
+        <div class="section-title">สต็อกใกล้หมด</div>
+        <div class="low-stock-card">
+            {% if low_stock %}
+            <table>
+                <tr>
+                    <th>วัตถุดิบ</th>
+                    <th>คงเหลือ</th>
+                    <th>ขั้นต่ำ</th>
+                </tr>
+                {% for item in low_stock %}
+                <tr>
+                    <td>{{ item.0 }}</td>
+                    <td style="color: var(--danger); font-weight: 600;">{{ item.1 }} {{ item.3 }}</td>
+                    <td>{{ item.2 }} {{ item.3 }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+            {% else %}
+            <div class="low-stock-empty">สต็อกทุกรายการปกติ ✓</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
