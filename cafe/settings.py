@@ -80,7 +80,7 @@ DATABASES = {
         'HOST': 'localhost\\SQLEXPRESS',
         'PORT': '',
         'USER': 'sa',
-        'PASSWORD': '123456789',
+        'PASSWORD': '123',
         'OPTIONS': {
             'driver': 'ODBC Driver 17 for SQL Server',
         },
