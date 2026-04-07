@@ -320,6 +320,21 @@
             color: var(--text-secondary);
             font-size: 14px;
         }
+
+        .logout-btn {
+            padding: 8px 16px;
+            border: 0.5px solid var(--border-hover);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .logout-btn:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
     </style>
 </head>
 <body>
@@ -332,12 +347,7 @@
             <div>แต้ม {{ customer_points }} คะแนน</div>
         </div>
         <button class="cart-btn" onclick="toggleCart()">🛒 ตะกร้า (<span id="cartCount">0</span>)</button>
-        <a href="{% url 'customer_logout' %}" 
-        style="padding:8px 16px; border:0.5px solid var(--border-hover); border-radius:8px; color:var(--text-secondary); font-size:13px; text-decoration:none; transition:all 0.2s;"
-        onmouseover="this.style.borderColor='var(--danger)';this.style.color='var(--danger)'"
-        onmouseout="this.style.borderColor='var(--border-hover)';this.style.color='var(--text-secondary)'">
-        ออกจากระบบ
-        </a>
+        <a href="{% url 'customer_logout' %}" class="logout-btn">ออกจากระบบ</a>
         <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
     </div>
 </header>
