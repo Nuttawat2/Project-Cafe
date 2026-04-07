@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'cafe_app',
+    'django.contrib.humanize',
 ]
 
 MIDDLEWARE = [

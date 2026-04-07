@@ -1,3 +1,4 @@
+{% load humanize %}
 <!DOCTYPE html>
 <html lang="th" data-theme="dark">
 <head>
@@ -156,7 +157,7 @@
 
     <div class="info-row">
         <span>ยอดรวม</span>
-        <span>฿{{ queue.2 }}</span>
+        <span>฿{{ queue.2|floatformat:0|intcomma }}</span>
     </div>
     <div class="info-row">
         <span>สถานะ</span>

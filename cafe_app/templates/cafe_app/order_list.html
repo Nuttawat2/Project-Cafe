@@ -1,4 +1,5 @@
 {% extends 'cafe_app/base.html' %}
+{% load humanize %}
 
 {% block title %}ออเดอร์{% endblock %}
 {% block nav_order %}active{% endblock %}
@@ -116,7 +117,7 @@ tr:hover td { background: var(--bg-tertiary); }
                 <span class="badge-cancel">ยกเลิก</span>
             {% endif %}
         </td>
-        <td style="font-weight: 600; color: var(--accent);">฿{{ order.5 }}</td>
+        <td style="font-weight: 600; color: var(--accent);">฿{{ order.5|floatformat:0|intcomma }}</td>
     </tr>
     {% endfor %}
 </table>

@@ -1,4 +1,5 @@
 {% extends 'cafe_app/base.html' %}
+{% load humanize %}
 
 {% block title %}Dashboard{% endblock %}
 {% block nav_dashboard %}active{% endblock %}
@@ -133,7 +134,7 @@ tr:hover td { background: var(--bg-tertiary); }
 <div class="dashboard-grid">
     <div class="stat-card">
         <div class="stat-label">ยอดขายวันนี้</div>
-        <div class="stat-value">฿{{ today_revenue }}</div>
+        <div class="stat-value">฿{{ today_revenue|floatformat:0|intcomma }}</div>
         <div class="stat-sub">บาท</div>
     </div>
     <div class="stat-card">
@@ -167,7 +168,7 @@ tr:hover td { background: var(--bg-tertiary); }
                 {% for order in recent_orders %}
                 <tr>
                     <td>{{ order.0 }}</td>
-                    <td>฿{{ order.1 }}</td>
+                    <td>฿{{ order.1|floatformat:0|intcomma }}</td>
                     <td>
                         {% if order.2 == 'done' %}
                             <span class="badge-done">เสร็จแล้ว</span>

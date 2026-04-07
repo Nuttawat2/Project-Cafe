@@ -327,6 +327,21 @@ def queue_update(request, queue_id):
                         SELECT Order_ID FROM QUEUE WHERE Queue_ID = %s
                     )
                 """, [queue_id])
+
+            elif status == 'cancelled':
+                cursor.execute("""
+                    UPDATE [ORDER] SET Status = 'cancelled'
+                    WHERE Order_ID = (
+                        SELECT Order_ID FROM QUEUE WHERE Queue_ID = %s
+                    )
+                """, [queue_id])
+                cursor.execute("""
+                    DELETE FROM ORDER_ITEM
+                    WHERE Order_ID = (
+                        SELECT Order_ID FROM QUEUE WHERE Queue_ID = %s
+                    )
+                """, [queue_id])
+
         messages.success(request, 'อัปเดตคิวเรียบร้อยแล้ว')
     return redirect('queue_manage')
 
@@ -411,3 +426,7 @@ def customer_register(request):
                 return redirect('customer_menu')
 
     return render(request, 'cafe_app/customer_register.html', {'error': error})
+
+def customer_logout(request):
+    request.session.flush()
+    return redirect('customer_login')

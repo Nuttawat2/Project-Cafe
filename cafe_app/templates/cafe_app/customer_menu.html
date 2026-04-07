@@ -332,6 +332,12 @@
             <div>แต้ม {{ customer_points }} คะแนน</div>
         </div>
         <button class="cart-btn" onclick="toggleCart()">🛒 ตะกร้า (<span id="cartCount">0</span>)</button>
+        <a href="{% url 'customer_logout' %}" 
+        style="padding:8px 16px; border:0.5px solid var(--border-hover); border-radius:8px; color:var(--text-secondary); font-size:13px; text-decoration:none; transition:all 0.2s;"
+        onmouseover="this.style.borderColor='var(--danger)';this.style.color='var(--danger)'"
+        onmouseout="this.style.borderColor='var(--border-hover)';this.style.color='var(--text-secondary)'">
+        ออกจากระบบ
+        </a>
         <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
     </div>
 </header>
@@ -373,7 +379,7 @@
     <div class="menu-body">
         <div class="menu-category">{{ menu.category }}</div>
         <div class="menu-name">{{ menu.name }}</div>
-        <div class="menu-price">฿{{ menu.price }} <span>บาท</span></div>
+        <div class="menu-price">฿{{ menu.price|floatformat:0 }} <span>บาท</span></div>
         {% if menu.can_make %}
         <div class="qty-control">
             <button type="button" class="qty-btn" onclick="changeQty({{ menu.menu_id }}, -1)">−</button>
@@ -445,12 +451,12 @@
                 const subtotal = price * qty;
                 total += subtotal;
                 count += qty;
-                html += '<div class="cart-item"><span class="cart-item-name">' + name + ' x' + qty + '</span><span class="cart-item-price">฿' + subtotal.toFixed(2) + '</span></div>';
+                html += '<div class="cart-item"><span class="cart-item-name">' + name + ' x' + qty + '</span><span class="cart-item-price">฿' + subtotal.toLocaleString('th-TH') + '</span></div>';
             }
         });
 
         document.getElementById('cartItems').innerHTML = html || '<div class="empty-cart">ยังไม่มีรายการ</div>';
-        document.getElementById('cartTotal').textContent = '฿' + total.toFixed(2);
+        document.getElementById('cartTotal').textContent = '฿' + total.toLocaleString('th-TH');
         document.getElementById('cartCount').textContent = count;
     }
 

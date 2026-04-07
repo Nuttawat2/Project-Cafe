@@ -18,4 +18,5 @@ urlpatterns = [
     path('queue/clear/', views.queue_clear, name='queue_clear'),
     path('customer/login/', views.customer_login, name='customer_login'),
     path('customer/register/', views.customer_register, name='customer_register'),
+    path('customer/logout/', views.customer_logout, name='customer_logout'),
 ]
