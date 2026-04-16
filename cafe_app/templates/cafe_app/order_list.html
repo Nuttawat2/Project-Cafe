@@ -104,21 +104,21 @@ tr:hover td { background: var(--bg-tertiary); }
     </tr>
     {% for order in orders %}
     <tr>
-        <td style="color: var(--text-secondary);">#{{ order.0 }}</td>
-        <td>{{ order.1 }}</td>
-        <td style="color: var(--text-secondary);">{{ order.2 }}</td>
-        <td style="color: var(--text-secondary); font-size: 13px;">{{ order.3 }}</td>
+        <td style="color: var(--text-secondary);">{{ order.1 }}</td>
+        <td>{{ order.2 }}</td>
+        <td   td style="color: var(--text-secondary);">{{ order.3 }}</td>
+        <td style="color: var(--text-secondary); font-size: 13px;">{{ order.4 }}</td>
         <td>
-            {% if order.4 == 'done' %}
+            {% if order.5 == 'done' %}
                 <span class="badge-done">เสร็จแล้ว</span>
-            {% elif order.4 == 'pending' %}
+            {% elif order.5 == 'pending' %}
                 <span class="badge-pending">รอดำเนินการ</span>
             {% else %}
                 <span class="badge-cancel">ยกเลิก</span>
             {% endif %}
-        </td>
-        <td style="font-weight: 600; color: var(--accent);">฿{{ order.5|floatformat:0|intcomma }}</td>
-    </tr>
+    </td>
+    <td style="font-weight: 600; color: var(--accent);">฿{{ order.6|floatformat:0|intcomma }}</td>
+</tr>
     {% endfor %}
 </table>
 {% else %}

@@ -1,7 +1,7 @@
 USE [CafeDB]
 GO
 
-/****** Object:  Trigger [dbo].[trg_ReduceStock]    Script Date: 4/3/2026 12:16:44 AM ******/
+/****** Object:  Trigger [dbo].[trg_ReduceStock]    Script Date: 4/17/2026 12:58:16 AM ******/
 SET ANSI_NULLS ON
 GO
 

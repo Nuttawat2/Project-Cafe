@@ -129,6 +129,7 @@ def order_list(request):
         cursor.execute("""
             SELECT
                 O.Order_ID,
+                C.Customer_Code,
                 C.First_Name + ' ' + C.Last_Name AS Customer_Name,
                 E.First_Name + ' ' + E.Last_Name AS Employee_Name,
                 O.Order_Date,
